@@ -1,3 +1,3 @@
-<h1>Lab Diagram</h1>
+<h1 align="center">Lab Diagram</h1>
 # Hello World
 # This is a Test
