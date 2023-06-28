@@ -18,7 +18,6 @@ We will also install a webserver on the EC-2 instance and access it using a web 
 <summary>Rundown Check</summary>
   1.Create the VPC with the CIDR Block Range 10.0.0.0/16 (65000 Hosts)
   
-
   2.Create an Internet Gateway and attach it to the newly created VPC
 
   3.Create Public Subnet-1 in Availability Zone-1 with the CIDR 10.0.0.0/24
