@@ -2,7 +2,7 @@
 
 _This repository is a test infrastructure in AWS cloud._
 ---
-![Image diagram](src/Lab-VPC.drawio.png)
+! [Image diagram](src/Lab-VPC.drawio.png)
 ## Objective:
 * Create VPC 
 * Create subnets
