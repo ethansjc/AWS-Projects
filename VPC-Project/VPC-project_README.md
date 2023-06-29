@@ -108,6 +108,7 @@ Update Private Route Table Route’s as follows
 14. Associate the VPC Security Group for the EC-2
 
 15. Update User Data for the EC-2
+
 ![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-9.png)
 
 ![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-10.png)
