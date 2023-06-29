@@ -113,7 +113,9 @@ Update Private Route Table Route’s as follows
 ![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-10.png)
 
 Double Check Both Public and Private Routes
+
 ![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-11.png)
+
 ![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-12.png)
 
 16. Launch EC-2
