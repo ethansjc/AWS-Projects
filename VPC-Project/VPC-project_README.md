@@ -74,7 +74,7 @@ We will also install a webserver on the EC-2 instance and access it using a web 
 
 6. Create a NAT Gateway using the Elastic IP and Public Subnet -1 as base
 
-(https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-6.png)
+![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-6.png)
 
 7. Create Public Subnet-2 in Availability Zone-2 with the CIDR 10.0.2.0/24
 
