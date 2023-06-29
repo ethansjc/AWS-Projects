@@ -54,6 +54,18 @@ We will also install a webserver on the EC-2 instance and access it using a web 
 
 ### Tutorial (Step-By-Step)
 
-1. Create the VPC with the CIDR Block Range 10.0.0.0/16 (65000 Hosts)
+1. Create the VPC with the CIDR Block Range 10.0.0.0/16 (65000 Hosts).
 
 ![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-1.png)
+
+2. Create an Internet Gateway and attach it to the newly created VPC.
+
+![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-2.png)
+
+3. Create Public Subnet-1 in Availability Zone-1 with the CIDR 10.0.0.0/24.
+
+![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-3.png)
+
+4. Create Private Subnet-1 in Availability Zone-1 with CIDR of 10.0.1.0/24
+
+![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-4.png)
