@@ -99,6 +99,7 @@ Update Private Route Table Route’s as follows
 11. Create VPC Security Group to allow inbound HTTP,HTTPS and SSH
 
 12. Create EC-2 Instances using the VPC Created as base and the Public Subnet-1 as EC-2 Location.
+
 ![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-8.png)
 
 12. Create EC-2 Instances using the VPC Created as base and the Public Subnet-1 as EC-2 Location.
@@ -120,9 +121,11 @@ Double Check Both Public and Private Routes
 ![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-12.png)
 
 16. Launch EC-2
+
 ![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-13.png)
 
 17. Test Webserver running on EC-2 using a browser.
+
 ![VPC-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabVPC-IMG-15.png)
 
 Use Putty to add in the following commands after successful connection:
