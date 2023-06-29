@@ -53,3 +53,5 @@ We will also install a webserver on the EC-2 instance and access it using a web 
 </details>
 
 ### Tutorial (Step-By-Step)
+
+1. Create the VPC with the CIDR Block Range 10.0.0.0/16 (65000 Hosts)
