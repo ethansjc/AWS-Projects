@@ -46,6 +46,8 @@ Create a batch file that can be used to update the static website when you chang
 
 4. Created a new IAM user, and enabled that user to have full access policy to the Amazon S3 service.
 
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG4.png)
+
 ![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG7.png)
 
 ![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG8.png)
@@ -60,11 +62,17 @@ Create a batch file that can be used to update the static website when you chang
 
 6. Upload files to Amazon S3 by using Amazon CLI.
 
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG10.png)
+
 ![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG11.png)
 
 ![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG12.png)
 
-![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG10.png)
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG13.png)
+
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG14.png)
+
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG15.png)
 
 7. Create a batch file that can be used to update the static website.
 
