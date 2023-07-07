@@ -78,8 +78,9 @@ Create a batch file that can be used to update the static website when you chang
 
 ![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG16.png)
 
-![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG17.png)
 
 <h1 align="center">Congratulations!!!</h1>
 
 We just made our first revision to website!
+
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG17.png)
