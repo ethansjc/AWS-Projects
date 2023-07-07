@@ -56,11 +56,15 @@ Create a batch file that can be used to update the static website when you chang
 
 5. Extract files
 
-![S3-Project-photo]
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG9.png)
 
 6. Upload files to Amazon S3 by using Amazon CLI.
 
-![S3-Project-photo]
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG11.png)
+
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG12.png)
+
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG10.png)
 
 7. Create a batch file that can be used to update the static website.
 
