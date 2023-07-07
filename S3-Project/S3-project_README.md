@@ -14,14 +14,41 @@ Create a batch file that can be used to update the static website when you chang
 <details>
 <summary>Rundown Check</summary>
 
-1. Establish Connectivity to EC2 instance
+1. Establish Connectivity to EC2 instance.
 
-2. Launch EC-2 instance through the use of Putty
+2. Using SSH session terminal window to configure command to update the AWS CLI software with credentials.
 
-3. Using SSH session terminal window to configure command to update the AWS CLI software with credentials.
+3. Create S3 bucket using AWS CLI.
 
-4. Create S3 bucket using AWS CLI
+4. Created a new IAM user, and enabled that user to have full access policy to the Amazon S3 service.
 
-5. Add a user, and enabled that user to have full access policy for S3
+5. Extract files
+
+6. Upload files to Amazon S3 by using Amazon CLI.
+
+7. Create a batch file that can be used to update the static website.
 
 </details>
+
+### Tutorial (Step-By-Step)
+
+1. Establish Connectivity to EC2 instance.
+![S3-Project-photo]
+
+2. Using SSH session terminal window to configure command to update the AWS CLI software with credentials.
+![S3-Project-photo]
+
+3. Create S3 bucket using AWS CLI.
+![S3-Project-photo]
+
+4. Created a new IAM user, and enabled that user to have full access policy to the Amazon S3 service.
+![S3-Project-photo]
+
+5. Extract files
+![S3-Project-photo]
+
+6. Upload files to Amazon S3 by using Amazon CLI.
+![S3-Project-photo]
+
+7. Create a batch file that can be used to update the static website.
+![S3-Project-photo]
