@@ -76,4 +76,6 @@ Create a batch file that can be used to update the static website when you chang
 
 7. Create a batch file that can be used to update the static website.
 
-![S3-Project-photo]
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG16.png)
+
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG17.png)
