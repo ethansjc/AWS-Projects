@@ -33,22 +33,31 @@ Create a batch file that can be used to update the static website when you chang
 ### Tutorial (Step-By-Step)
 
 1. Establish Connectivity to EC2 instance.
+
 ![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG1.png)
 
 2. Using SSH session terminal window to configure command to update the AWS CLI software with credentials.
-![S3-Project-photo]
+
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG2.png)
 
 3. Create S3 bucket using AWS CLI.
-![S3-Project-photo]
+
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG3.png)
 
 4. Created a new IAM user, and enabled that user to have full access policy to the Amazon S3 service.
-![S3-Project-photo]
+
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG7.png)
+
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG8.png)
 
 5. Extract files
+
 ![S3-Project-photo]
 
 6. Upload files to Amazon S3 by using Amazon CLI.
+
 ![S3-Project-photo]
 
 7. Create a batch file that can be used to update the static website.
+
 ![S3-Project-photo]
