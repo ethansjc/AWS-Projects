@@ -50,6 +50,10 @@ Create a batch file that can be used to update the static website when you chang
 
 ![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG8.png)
 
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG5.png)
+
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG6.png)
+
 5. Extract files
 
 ![S3-Project-photo]
