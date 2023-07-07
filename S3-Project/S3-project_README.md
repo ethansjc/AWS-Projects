@@ -33,7 +33,7 @@ Create a batch file that can be used to update the static website when you chang
 ### Tutorial (Step-By-Step)
 
 1. Establish Connectivity to EC2 instance.
-![S3-Project-photo]
+![S3-Project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/LabS3/LabS3-IMG1.png)
 
 2. Using SSH session terminal window to configure command to update the AWS CLI software with credentials.
 ![S3-Project-photo]
