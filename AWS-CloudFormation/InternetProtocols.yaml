@@ -1,0 +1,229 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: reStart Activity troubleshooting a VPC
+
+####################################################################################################
+Parameters:
+####################################################################################################
+
+
+  LatestAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+
+Resources: 
+###########
+# VPC with 1 public subnet 
+###########
+
+  VPC1:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags:
+        - Key: Name
+          Value: VPC1
+
+  VPC1InternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+    Properties:
+      Tags:
+        - Key: Name
+          Value: VPC1 Internet Gateway
+
+  VPC1AttachInternetGateway:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    DependsOn:
+      - VPC1
+      - VPC1InternetGateway
+    Properties:
+      VpcId: !Ref VPC1
+      InternetGatewayId: !Ref VPC1InternetGateway
+
+  VPC1PublicSubnet1:
+    Type: 'AWS::EC2::Subnet'
+    DependsOn: VPC1
+    Properties:
+      VpcId: !Ref VPC1
+      CidrBlock: 10.0.10.0/24
+      AvailabilityZone: !Select
+        - '0'
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: VPC1 Public Subnet 1
+
+###########
+# VPC1 Public Routing
+###########
+
+  VPC1PublicRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    DependsOn:
+      - VPC1
+    Properties:
+      VpcId: !Ref VPC1
+      Tags:
+        - Key: Name
+          Value: VPC1 Public Route Table
+
+  VPC1PublicRoute:
+    Type: 'AWS::EC2::Route'
+    DependsOn:
+      - VPC1PublicRouteTable
+      - VPC1AttachInternetGateway
+    Properties:
+      RouteTableId: !Ref VPC1PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref VPC1InternetGateway
+
+  VPC1PublicSubnet1RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    DependsOn:
+      - VPC1PublicRouteTable
+      - VPC1PublicSubnet1
+    Properties:
+      SubnetId: !Ref VPC1PublicSubnet1
+      RouteTableId: !Ref VPC1PublicRouteTable
+
+###########
+# VPC1 Public NACL settings
+###########
+
+  VPC1PublicNetworkAcl:
+    Type: AWS::EC2::NetworkAcl
+    DependsOn: VPC1
+    Properties:
+      VpcId: !Ref VPC1
+      Tags:
+        - Key: Name
+          Value: VPC1 Public Network ACL
+
+  VPC1PublicNetworkAclEntry1:
+    Type: AWS::EC2::NetworkAclEntry
+    DependsOn: VPC1PublicNetworkAcl
+    Properties:
+      NetworkAclId:
+        Ref: VPC1PublicNetworkAcl
+      RuleNumber: '100'
+      Protocol: "-1"
+      RuleAction: allow
+      Egress: 'false'
+      CidrBlock: 0.0.0.0/0
+      Icmp:
+        Code: "-1"
+        Type: "-1"
+      PortRange:
+        From: '-1'
+        To: '-1'
+
+  VPC1PublicNetworkAclEntry2:
+    Type: AWS::EC2::NetworkAclEntry
+    DependsOn: VPC1PublicNetworkAcl
+    Properties:
+      NetworkAclId:
+        Ref: VPC1PublicNetworkAcl
+      RuleNumber: '100'
+      Protocol: "-1"
+      RuleAction: allow
+      Egress: 'true'
+      CidrBlock: 0.0.0.0/0
+      Icmp:
+        Code: "-1"
+        Type: "-1"
+      PortRange:
+        From: '-1'
+        To: '-1'
+
+  VPC1PublicNetworkAclAssociation:
+    Type: AWS::EC2::SubnetNetworkAclAssociation
+    DependsOn:
+      - VPC1PublicSubnet1
+      - VPC1PublicNetworkAcl
+    Properties:
+      SubnetId: !Ref VPC1PublicSubnet1
+      NetworkAclId: !Ref VPC1PublicNetworkAcl
+
+###########
+# Security Groups
+###########
+
+  PublicInstanceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    DependsOn: VPC1
+    Properties:
+      GroupDescription: Enable SSH access
+      VpcId: !Ref VPC1
+      Tags:
+        - Key: Name
+          Value: PublicInstanceSecurityGroup
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          FromPort: '0'
+          ToPort: '65535'
+          CidrIp: 0.0.0.0/0
+
+###########
+# Instance in VPC1 public subnet
+###########
+
+  PublicInstance:
+    Type: 'AWS::EC2::Instance'
+    DependsOn:
+     # - VPC1
+      - PublicInstanceSecurityGroup
+      - VPC1PublicSubnet1
+    Properties:
+      ImageId: !Ref LatestAmiId
+
+      InstanceType: t3.micro
+      NetworkInterfaces:
+        - DeviceIndex: '0'
+          AssociatePublicIpAddress: 'false'
+          SubnetId: !Ref VPC1PublicSubnet1
+          GroupSet:
+            - !Ref PublicInstanceSecurityGroup
+      SourceDestCheck: 'false'
+      Tags:
+        - Key: Name
+          Value: instance A 
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum -y update
+          cd /home/ec2-user
+          chown ec2-user -R /home/ec2-user
+
+###########
+# Instance in VPC1 public subnet instance B, delete after Lab 1
+###########
+
+  PublicInstanceB:
+    Type: 'AWS::EC2::Instance'
+    DependsOn:
+      - PublicInstanceSecurityGroup
+      - VPC1PublicSubnet1
+    Properties:
+      ImageId: !Ref LatestAmiId
+
+      InstanceType: t3.micro
+      NetworkInterfaces:
+        - DeviceIndex: '0'
+          AssociatePublicIpAddress: 'true'
+          SubnetId: !Ref VPC1PublicSubnet1
+          GroupSet:
+            - !Ref PublicInstanceSecurityGroup
+      SourceDestCheck: 'false'
+      Tags:
+        - Key: Name
+          Value: instance B 
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum -y update
+          cd /home/ec2-user
+          chown ec2-user -R /home/ec2-user
