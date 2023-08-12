@@ -1,0 +1,89 @@
+Description: SPL-200
+
+# Creates "Ethan's VPC" with an EC2 instance in us-west-2
+
+Resources:
+  EthansVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      CidrBlock: 10.0.0.0/16
+      Tags:
+        - Key: Name
+          Value: Ethan's VPC
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref EthansVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  EthansSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref EthansVPC
+      MapPublicIpOnLaunch: true
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select
+        - "0"
+        - !GetAZs "us-west-2"
+      Tags:
+        - Key: Name
+          Value: Public Subnet 1
+
+  EthansRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref EthansVPC
+      Tags:
+        - Key: Name
+          Value: Route table for subnets
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref EthansRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  Subnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref EthansSubnet1
+      RouteTableId: !Ref EthansRouteTable
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for EC2 instance
+      VpcId: !Ref EthansVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-00970f57473724c10
+      InstanceType: t3.micro
+      SecurityGroupIds:
+        - !Ref SecurityGroup
+      SubnetId: !Ref EthansSubnet1
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum -y install httpd
+          systemctl enable httpd
+          systemctl start httpd
+          echo "<html><body><h1>Hello from <b>Ethan's</b> web server</h1></body></html>" > /var/www/html/index.html
+
+# Outputs:
+#   EC2InstanceId:
+#     Description: The ID of the EC2 instance
+#     Value: !Ref EC2Instance

@@ -1,0 +1,179 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template for creating VPC, subnets, gateways, routes, and an EC2 instance with a key pair.
+
+Parameters:
+  VpcCidr:
+    Type: String
+    Description: CIDR range for the VPC
+    Default: "10.0.0.0/16"
+  PublicSubnet1Cidr:
+    Type: String
+    Description: CIDR range for Public Subnet 1
+    Default: "10.0.0.0/24"
+  PrivateSubnet1Cidr:
+    Type: String
+    Description: CIDR range for Private Subnet 1
+    Default: "10.0.1.0/24"
+  PublicSubnet2Cidr:
+    Type: String
+    Description: CIDR range for Public Subnet 2
+    Default: "10.0.2.0/24"
+  PrivateSubnet2Cidr:
+    Type: String
+    Description: CIDR range for Private Subnet 2
+    Default: "10.0.3.0/24"
+  LinuxAmiId:
+    Type: String
+    Description: ID of the Linux AMI for EC2 instance
+    Default: "ami-00970f57473724c10"
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      Tags:
+        - Key: Name
+          Value: "Ethan's VPC"
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: "us-west-2a"
+      CidrBlock: !Ref PublicSubnet1Cidr
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: "Public Subnet 1"
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: "us-west-2a"
+      CidrBlock: !Ref PrivateSubnet1Cidr
+      Tags:
+        - Key: Name
+          Value: "Private Subnet 1"
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: "us-west-2b"
+      CidrBlock: !Ref PublicSubnet2Cidr
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: "Public Subnet 2"
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: "us-west-2b"
+      CidrBlock: !Ref PrivateSubnet2Cidr
+      Tags:
+        - Key: Name
+          Value: "Private Subnet 2"
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: "Public Route Table"
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: "Private Route Table"
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref InternetGateway
+
+  NATGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      AllocationId: !GetAtt NATGatewayEIP.AllocationId
+
+  PrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref NATGateway
+
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Enable SSH and HTTP access"
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: !Ref LinuxAmiId
+      SubnetId: !Ref PublicSubnet2
+      SecurityGroupIds:
+        - !Ref InstanceSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo su
+          yum update -y
+          yum install -y httpd
+          echo "<p> My Instance! </p>" > /var/www/html/index.html
+          systemctl start httpd
+          systemctl enable httpd
+
+# Outputs:
+#   VpcId:
+#     Value: !Ref VPC
+#   PublicSubnet1Id:
+#     Value: !Ref PublicSubnet1
+#   PrivateSubnet1Id:
+#     Value: !Ref PrivateSubnet1
+#   PublicSubnet2Id:
+#     Value: !Ref PublicSubnet2
+#   PrivateSubnet2Id:
+#     Value: !Ref PrivateSubnet2
+#   InstanceId:
+#     Value: !Ref EC2Instance
+#   InstancePublicIp:
+#     Value: !GetAtt EC2Instance.PublicIp
