@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: reStart Activity troubleshooting a VPC
+Description: Troubleshooting a VPC
 
 ####################################################################################################
 Parameters:
@@ -199,7 +199,7 @@ Resources:
           chown ec2-user -R /home/ec2-user
 
 ###########
-# Instance in VPC1 public subnet instance B, delete after Lab 1
+# Instance in VPC1 public subnet instance B
 ###########
 
   PublicInstanceB:
