@@ -8,4 +8,10 @@
 
 |   draw.io                 |   Designer in CloudFormation      |
 |---------------------------|-----------------------------------|
+|![draw.io diagram](img/EC2.drawio.png) | ![CloudFormationDsgn](img/EC2.png) |
+
+<h3 align="center">Project S3 stack using CloudFormation Template</h3>
+
+|   draw.io                 |   Designer in CloudFormation      |
+|---------------------------|-----------------------------------|
 |![draw.io diagram](img/S3.drawio.png) | ![CloudFormationDsgn](img/s3-designer.png) |
