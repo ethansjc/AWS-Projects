@@ -1,10 +1,10 @@
 <h1 align="center">Welcome to Ethan's AWS CloudFormation Series!!!</h1>
 
-In this directory contains hopefully many templates for creating what ever resources you may need to create for yourself.
+<h3 align="center">In this sub-directory contains hopefully many cloudformation templates for creating whatever resources you may need to create for yourself.</h3>
 
 <h2 align="center"> AWS-CloudFormation</h2>
 
-### Project EC2 stack using CloudFormation Template
+<h3 align="center">Project EC2 stack using CloudFormation Template</h3>
 
 |   draw.io                 |   Designer in CloudFormation      |
 |---------------------------|-----------------------------------|
