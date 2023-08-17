@@ -25,3 +25,9 @@ This only creates an empty bucket need to use management console to upload file 
 |   draw.io                 |   Designer in CloudFormation      |
 |---------------------------|-----------------------------------|
 |![draw.io diagram](img/VPCWebServer.drawio.png) | ![CloudFormationDsgn](img/VPCWebServer-designer.png) |
+
+<h3 align="center">Project InternetProtocol stack using CloudFormation Template</h3>
+
+|   draw.io                 |   Designer in CloudFormation      |
+|---------------------------|-----------------------------------|
+|![draw.io diagram](img/InternetProtocols.drawio.png) | ![CloudFormationDsgn](img/InternetProtocol-designer.png) |
