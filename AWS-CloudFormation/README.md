@@ -8,4 +8,4 @@
 
 |   draw.io                 |   Designer in CloudFormation      |
 |---------------------------|-----------------------------------|
-|![draw.io diagram](img/EC2.drawio.png) | ![CloudFormationDsgn](img/EC2.png) |
+|![draw.io diagram](img/S3.drawio.png) | ![CloudFormationDsgn](img/s3-designer.png) |
