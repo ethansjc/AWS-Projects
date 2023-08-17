@@ -1,0 +1,595 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Cloudformation template to deploy a ECS cluster using CI/CD Pipeline
+Parameters:
+  VpcCIDR:
+    Type: String
+    Default: 18.0.0.0/16
+    Description: CIDR block for the VPC
+
+  PublicSubnet1CIDR:
+    Type: String
+    Default: 18.0.0.0/24
+    Description: CIDR block for the First public subnet
+
+  PrivateSubnet1CIDR:
+    Type: String
+    Default: 18.0.1.0/24
+    Description: CIDR block for the First private subnet
+
+  PublicSubnet2CIDR:
+    Type: String
+    Default: 18.0.2.0/24
+    Description: CIDR block for the Second public subnet
+
+  PrivateSubnet2CIDR:
+    Type: String
+    Default: 18.0.3.0/24
+    Description: CIDR block for the Second private subnet
+
+  GitHubOwner:
+    Description: Name of GitHub Owner
+    Type: String
+    Default: 
+
+  GitHubRepo:
+    Description: Name of GitHub Repo
+    Type: String
+    Default: 
+
+  GitHubBranch:
+    Description: Name of GitHub Repo Branch
+    Type: String
+    Default: 
+
+  GitHubOAuthToken:
+    Type: String
+    NoEcho: true
+    Default: 
+
+  BuckerName:
+    Description: S3 Bucket Name
+    Type: String
+    Default: 
+
+  NotificationEmail:
+    Type: String
+    Description: Email address where notifications will be sent
+    Default: 
+
+Resources:
+  PrivateVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      Tags:
+      - Key: stack
+        Value: production
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: InternetGateway
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref PrivateVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref PrivateVPC
+      CidrBlock: !Ref PublicSubnet1CIDR
+      AvailabilityZone: "us-east-1a"
+      Tags:
+      - Key: Name
+        Value: PublicSubnet-az-1
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref PrivateVPC
+      CidrBlock: !Ref PrivateSubnet1CIDR
+      AvailabilityZone: "us-east-1a"
+      Tags:
+      - Key: Name
+        Value: PrivateSubnet-az-1
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref PrivateVPC
+      CidrBlock: !Ref PublicSubnet2CIDR
+      AvailabilityZone: "us-east-1b"
+      Tags:
+      - Key: Name
+        Value: PublicSubnet-az-2
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref PrivateVPC
+      CidrBlock: !Ref PrivateSubnet2CIDR
+      AvailabilityZone: "us-east-1b"
+      Tags:
+      - Key: Name
+        Value: PrivateSubnet-az-2
+
+  PublicRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref PrivateVPC
+
+  PublicRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref PrivateVPC
+
+  PublicRoute1:
+    Type: AWS::EC2::Route
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicRoute2:
+    Type: AWS::EC2::Route
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable1
+
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref PublicRouteTable2
+
+  NATGatewayEIP1:
+    Type: AWS::EC2::EIP
+
+  NATGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NATGatewayEIP1.AllocationId
+      SubnetId: !Ref PublicSubnet1
+
+  NATGatewayEIP2:
+    Type: AWS::EC2::EIP
+
+  NATGateway2:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NATGatewayEIP2.AllocationId
+      SubnetId: !Ref PublicSubnet2
+
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref PrivateVPC
+      Tags:
+      - Key: Name
+        Value: PrivateRouteTable1
+
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref PrivateVPC
+      Tags:
+      - Key: Name
+        Value: PrivateRouteTable2
+  
+  PrivateRoute1:
+    Type: AWS::EC2::Route
+    DependsOn: NATGateway1
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PrivateRoute2:
+    Type: AWS::EC2::Route
+    DependsOn: NATGateway2
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+  
+  PrivateSubnet1Association:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      SubnetId: !Ref PrivateSubnet1
+
+  PrivateSubnet2Association:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      SubnetId: !Ref PrivateSubnet2
+
+  MyECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: ecs-flaskapp
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      ImageTagMutability: MUTABLE
+
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: ECS-Cluster-FlaskApp
+      CapacityProviders:
+      - FARGATE
+      - FARGATE_SPOT
+      ClusterSettings:
+      - Name: containerInsights
+        Value: enabled
+      Configuration:
+        ExecuteCommandConfiguration:
+          Logging: DEFAULT
+      ServiceConnectDefaults:
+        Namespace: ECSClusterNamespace
+
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: ECS-Cluster-FlaskApp
+      TaskDefinition: <TASK-DEFINATION PATH>
+      LaunchType: FARGATE
+      ServiceName: ECS-Service
+      SchedulingStrategy: REPLICA
+      DesiredCount: 2
+      LoadBalancers:
+      - ContainerName: flaskapp
+        ContainerPort: 80
+        TargetGroupArn:
+          Ref: TargetGroup
+      HealthCheckGracePeriodSeconds: '10'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: SecurityGroup
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+      PlatformVersion: LATEST
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+      DeploymentController:
+        Type: ECS
+      ServiceConnectConfiguration:
+        Enabled: false
+      Tags: []
+      EnableECSManagedTags: true
+    DependsOn:
+    - Listener
+    
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SecurityGroup for ECS
+      GroupName: ECS-SG
+      VpcId: !Ref PrivateVPC
+      SecurityGroupIngress:
+      - FromPort: 80
+        ToPort: 80
+        IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+      - FromPort: 80
+        ToPort: 80
+        IpProtocol: tcp
+        CidrIpv6: "::/0"
+        
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: application
+      Name: ALB-ECS-Service
+      SecurityGroups:
+      - Ref: SecurityGroup
+      Subnets:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckPath: "/"
+      Name: ECS-TG
+      Port: 80
+      Protocol: HTTP
+      TargetType: ip
+      HealthCheckProtocol: HTTP
+      VpcId: !Ref PrivateVPC
+
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn:
+          Ref: TargetGroup
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: 
+                - codepipeline.amazonaws.com
+                - codebuild.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CodePipelinePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Resource:
+                  - 'arn:aws:logs:us-east-1:<Account-ID>:log-group:/aws/codebuild/CodePipelineRole'
+                  - 'arn:aws:logs:us-east-1:<Account-ID>:log-group:/aws/codebuild/CodePipelineRole:*'
+                  - '*'
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+              - Effect: Allow
+                Resource:
+                  - 'arn:aws:s3:::<BuckerName>*'
+                  - 'arn:aws:s3:::<BuckerName>-*/*'
+                Action:
+                  - 's3:PutObject'
+                  - 's3:GetObject'
+                  - 's3:GetObjectVersion'
+                  - 's3:GetBucketAcl'
+                  - 's3:GetBucketLocation'
+                  - 's3:*'
+              - Effect: Allow
+                Action:
+                  - 'ecr:GetAuthorizationToken'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'codebuild:CreateReportGroup'
+                  - 'codebuild:CreateReport'
+                  - 'codebuild:UpdateReport'
+                  - 'codebuild:BatchPutTestCases'
+                  - 'codebuild:BatchPutCodeCoverages'
+                Resource:
+                  - 'arn:aws:codebuild:us-east-1:<Account-ID>:report-group/CodePipelineRole-*'
+              - Effect: Allow
+                Action: 'codebuild:*'
+                Resource: '*'
+
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: 
+                - codebuild.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CodePipelinePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Resource:
+              - arn:aws:logs:us-east-1:<Account-ID>:log-group:/aws/codebuild/CodeBuildRole
+              - arn:aws:logs:us-east-1:<Account-ID>:log-group:/aws/codebuild/CodeBuildRole:*
+              - "*"
+              Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - ecr:*
+            - Effect: Allow
+              Resource:
+              - 'arn:aws:s3:::<BuckerName>*'
+              - 'arn:aws:s3:::<BuckerName>-*/*'
+              Action:
+              - s3:PutObject
+              - s3:GetObject
+              - s3:GetObjectVersion
+              - s3:GetBucketAcl
+              - s3:GetBucketLocation
+            - Effect: Allow
+              Action: ecr:GetAuthorizationToken
+              Resource: "*"
+            - Effect: Allow
+              Action:
+              - codebuild:CreateReportGroup
+              - codebuild:CreateReport
+              - codebuild:UpdateReport
+              - codebuild:BatchPutTestCases
+              - codebuild:BatchPutCodeCoverages
+              Resource:
+              - arn:aws:codebuild:us-east-1:<Account-ID>:report-group/CodeBuildRole-*
+            - Effect: Allow
+              Action: 'codebuild:*'
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - ecs:DescribeServices
+                - ecs:UpdateService
+              Resource: "*"
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess'
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: CodeBuildProject
+      ServiceRole: !Ref CodeBuildRole
+      Source:
+        Type: GITHUB
+        Location: https://github.com/<GitHubOwner>/<GitHubRepo>.git
+        BuildSpec: buildspec.yml
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
+        PrivilegedMode: true
+
+  GithubWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+          SecretToken: !Ref GitHubOAuthToken
+      RegisterWithThirdParty: true
+      Filters:
+      - JsonPath: "$.ref"
+        MatchEquals: refs/heads/{Branch}
+      TargetPipeline: !Ref CodePipeline
+      TargetPipelineVersion: !GetAtt CodePipeline.Version
+      TargetAction: Source
+
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: ECS-Pipeline
+      ArtifactStore:
+        Type: S3
+        Location: !Sub ${BuckerName}
+      RestartExecutionOnUpdate: true
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+      - Name: Source
+        Actions:
+        - Name: Source
+          InputArtifacts: []
+          ActionTypeId:
+            Category: Source
+            Owner: ThirdParty
+            Version: 1
+            Provider: GitHub
+          OutputArtifacts:
+          - Name: SourceCode
+          Configuration:
+            Owner: !Ref GitHubOwner
+            Repo: !Ref GitHubRepo
+            Branch: !Ref GitHubBranch
+            PollForSourceChanges: false
+            OAuthToken: !Ref GitHubOAuthToken
+          RunOrder: 1
+      - Name: Build
+        Actions:
+          - Name: BuildAction
+            ActionTypeId:
+              Category: Build
+              Owner: AWS
+              Version: '1'
+              Provider: CodeBuild
+            InputArtifacts:
+              - Name: SourceCode
+            Configuration:
+              ProjectName: !Ref CodeBuildProject
+            OutputArtifacts:
+              - Name: BuildOutput
+            RunOrder: 2
+
+  SnsTopicCodeBuild:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: SnsTopicCodeBuild
+      Subscription:
+      - Endpoint:
+          Ref: NotificationEmail
+        Protocol: email
+
+  EventBridgeRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: CodeBuildEventRule
+      EventPattern:
+        Fn::Sub:
+          - '{"source": ["aws.codebuild"], "detail-type": ["Codebuild Build Phase Change"], "detail": {"completed-phase": ["SUBMITTED", "PROVISIONING", "DOWNLOAD_SOURCE", "INSTALL", "PRE_BUILD", "BUILD", "POST_BUILD", "UPLOAD_ARTIFACTS", "FINALIZING"], "completed-phase-status": ["TIMED_OUT", "STOPPED", "FAILED", "SUCCEEDED", "FAULT", "CLIENT_ERROR"], "project-name": ["${project_name}"]}}'
+          - project_name:
+              Ref: CodeBuildProject
+      State: ENABLED
+      RoleArn: !GetAtt SampleNotificationRuleRole.Arn
+      Targets:
+        - Arn: !Ref SnsTopicCodeBuild
+          Id: CodeBuildProject
+          InputTransformer:
+              InputPathsMap:
+                build-id: "$.detail.build-id"
+                project-name: "$.detail.project-name"
+                completed-phase: "$.detail.completed-phase"
+                completed-phase-status: "$.detail.completed-phase-status"
+              InputTemplate: |
+                "Build '<build-id>' for build project '<project-name>' has completed the build phase of '<completed-phase>' with a status of '<completed-phase-status>'."
+
+  SnsTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref SnsTopicCodeBuild
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref SnsTopicCodeBuild
+
+  SampleNotificationRuleRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+        Version: '2012-10-17'
+      Policies:
+        - PolicyDocument:
+            Statement:
+              - Action:
+                  - "sns:Publish"
+                Effect: Allow
+                Resource: '*'
+            Version: '2012-10-17'
+          PolicyName: sample-notification-rule-role-policy
+
+Outputs:
+  ALBDNSName:
+    Description: DNS name of the Application Load Balancer
+    Value: !GetAtt LoadBalancer.DNSName
+
+  ECSServiceName:
+    Description: ECS service name
+    Value: !Ref ECSService
