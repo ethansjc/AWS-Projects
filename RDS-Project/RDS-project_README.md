@@ -43,3 +43,7 @@
 5. Configure settings for the DB instance
 
 ![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG4.png)
+
+![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG5.png)
+
+![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG6.png)
