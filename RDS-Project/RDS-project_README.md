@@ -28,10 +28,16 @@
 
 1. Create a RDS Database instance.
 
+2. Select a standard creae and MySQL
+
 ![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG1.png)
 
 ![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG2.png)
 
+3. Use the Free Tier template 
+
 ![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG3.png)
+
+
 
 ![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG4.png)
