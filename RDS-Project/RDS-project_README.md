@@ -32,12 +32,14 @@
 
 ![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG1.png)
 
+3. Use the Free Tier template. 
+
 ![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG2.png)
 
-3. Use the Free Tier template 
+4. Select t3.micro.
 
 ![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG3.png)
 
-
+5. Configure settings for the DB instance
 
 ![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG4.png)
