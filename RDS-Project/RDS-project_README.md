@@ -27,4 +27,5 @@
 ### Tutorial (Step-By-Step):
 
 1. Create a RDS Database instance.
+
 ![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG1.png)
