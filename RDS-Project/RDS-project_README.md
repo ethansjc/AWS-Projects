@@ -29,3 +29,9 @@
 1. Create a RDS Database instance.
 
 ![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG1.png)
+
+![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG2.png)
+
+![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG3.png)
+
+![RDS-project-photo](https://github.com/ethansjc/AWS-Projects/blob/main/src/RDS/RDS-IMG4.png)
