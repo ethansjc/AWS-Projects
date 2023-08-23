@@ -31,3 +31,12 @@ This only creates an empty bucket need to use management console to upload file 
 |   draw.io                 |   Designer in CloudFormation      |
 |---------------------------|-----------------------------------|
 |![draw.io diagram](img/InternetProtocols.drawio.png) | ![CloudFormationDsgn](img/InternetProtocol-designer.png) |
+
+
+<h3 align="center">Project FullStackApp stack using CloudFormation Template</h3>
+
+* Note: This project template is still being updated!!!
+
+|   draw.io                 |   Designer in CloudFormation      |
+|---------------------------|-----------------------------------|
+|![draw.io diagram](img/Frontend.drawio.png) | ![CloudFormationDsgn](img/FullStack-BookStore-designer.png) |
